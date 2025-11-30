@@ -12,6 +12,7 @@ import {
   Get,
   Query,
   Param,
+  Put,
 } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
@@ -53,7 +54,7 @@ export class BookingController {
 
   // list all bookings
 
-  @Get('update-status/:id')
+  @Put('update-status/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @HttpCode(HttpStatus.OK)

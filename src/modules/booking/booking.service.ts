@@ -215,24 +215,16 @@ export class BookingService {
     };
   }
 
-  async count(query: QueryBookingDto, role: string, userId: string) {
+  async count(query: QueryBookingDto) {
     const where: any = this.createWhere(query);
-
-    if (role === 'user') {
-      where.userId = userId;
-    }
 
     return this.bookingModel.count({ where });
   }
 
-  async findAll(query: QueryBookingDto, role: string, userId: string) {
+  async findAll(query: QueryBookingDto) {
     const { page = 1, limit = 10, order, orderBy } = query || {};
 
     const where: any = this.createWhere(query);
-
-    if (role === 'user') {
-      where.userId = userId;
-    }
 
     const findOptions: any = {
       where,

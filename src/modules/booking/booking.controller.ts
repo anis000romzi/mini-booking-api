@@ -54,13 +54,36 @@ export class BookingController {
   }
 
   @Get('all-bookings')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @HttpCode(HttpStatus.OK)
+  @Roles('admin')
+  async findAll(@Query() query: QueryBookingDto) {
+    const data = await this.bookingService.findAll(query);
+    const count = await this.bookingService.count(query);
+    const { page = 1, limit = 10, orderBy, order } = query;
+
+    return {
+      meta: {
+        totalData: count,
+        totalPage: Math.ceil(count / limit),
+        page,
+        limit,
+        orderBy,
+        order,
+      },
+      data,
+    };
+  }
+
+  @Get('my-bookings')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  async findAll(@Req() req: Request, @Query() query: QueryBookingDto) {
-    const { role, id } = req.user as any;
+  async getOwnedBookings(@Req() req: Request, @Query() query: QueryBookingDto) {
+    const { id } = req.user as any;
+    query['userId'] = id;
 
-    const data = await this.bookingService.findAll(query, role, id);
-    const count = await this.bookingService.count(query, role, id);
+    const data = await this.bookingService.findAll(query);
+    const count = await this.bookingService.count(query);
     const { page = 1, limit = 10, orderBy, order } = query;
 
     return {

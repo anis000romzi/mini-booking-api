@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from 'src/database/models/user.model';
 import * as bcrypt from 'bcrypt';
@@ -20,6 +24,13 @@ export class AuthService {
   async register(payload: RegisterDto) {
     const { firstName, lastName, userName, email, password } = payload;
     const hashed = await bcrypt.hash(password, 10);
+
+    const existingEmail = await this.userModel.findOne({
+      where: {
+        email,
+      },
+    });
+    if (existingEmail) throw new BadRequestException('Email is already used');
 
     const user = await this.userModel.create({
       id: uuidv4(),

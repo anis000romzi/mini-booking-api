@@ -20,7 +20,8 @@ export class AuthService {
   async register(payload: RegisterDto) {
     const { firstName, lastName, userName, email, password } = payload;
     const hashed = await bcrypt.hash(password, 10);
-    await this.userModel.create({
+
+    const user = await this.userModel.create({
       id: uuidv4(),
       firstName,
       lastName,
@@ -29,7 +30,8 @@ export class AuthService {
       password: hashed,
       role: 'user',
     });
-    return { message: 'Registered successfully' };
+
+    return { user };
   }
 
   async login(payload: LoginDto) {

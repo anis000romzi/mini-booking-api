@@ -236,7 +236,14 @@ export class BookingService {
       findOptions.order = [[orderBy, order]];
     }
 
-    return this.bookingModel.findAll(findOptions);
+    return this.bookingModel.findAll({
+      ...findOptions,
+      include: [
+        {
+          model: Room,
+        },
+      ],
+    });
   }
 
   async findOne(id: string) {

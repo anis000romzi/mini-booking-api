@@ -242,6 +242,9 @@ export class BookingService {
         {
           model: Room,
         },
+        {
+          model: User,
+        },
       ],
     });
   }
@@ -256,6 +259,19 @@ export class BookingService {
     }
 
     return booking;
+  }
+
+  async cancelBooking(userId: string, id: string) {
+    const booking = await this.bookingModel.findOne({
+      where: { id },
+    });
+    if (!booking)
+      throw new NotFoundException(`Booking with id ${id} not found`);
+
+    booking.status = 'cancelled';
+    await booking.save();
+
+    return await this.findOne(id);
   }
 
   async updateBookingStatus(id: string, payload: UpdateBookingStatusDto) {

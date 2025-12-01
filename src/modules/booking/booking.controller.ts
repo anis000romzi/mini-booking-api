@@ -99,6 +99,14 @@ export class BookingController {
     };
   }
 
+  @Post('cancel/:id')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  cancelBooking(@Req() req: Request, @Param('id') id: string) {
+    const userId = (req.user as any)?.id;
+    return this.bookingService.cancelBooking(userId, id);
+  }
+
   @Put('update-status/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')

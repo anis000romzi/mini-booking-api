@@ -6,7 +6,11 @@ import { ResponseInterceptor } from './commons/interceptors/response.interceptor
 import { HttpExceptionFilter } from './commons/filters/http-exception.filter';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    cors: {
+      origin: '*',
+    },
+  });
   const configService = app.get(ConfigService);
 
   const config = new DocumentBuilder()

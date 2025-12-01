@@ -14,10 +14,11 @@ import { User } from 'src/database/models/user.model';
 import { v4 as uuidv4 } from 'uuid';
 import { GetAvailableDatesDto } from './dto/get-available-dates.dto';
 import { GetAvailableRoomsDto } from './dto/get-available-rooms.dto';
-import moment from 'moment';
+const moment = require('moment');
 import { Op } from 'sequelize';
 import * as _ from 'lodash';
 import { UpdateBookingStatusDto } from './dto/update-bookind-status.dto';
+import { QueryBookingDto } from './dto/query-booking.dto';
 
 @Injectable()
 export class BookingService {
@@ -212,6 +213,38 @@ export class BookingService {
       endAt,
       availableRooms,
     };
+  }
+
+  async count(query: QueryBookingDto, role: string, userId: string) {
+    const where: any = this.createWhere(query);
+
+    if (role === 'user') {
+      where.userId = userId;
+    }
+
+    return this.bookingModel.count({ where });
+  }
+
+  async findAll(query: QueryBookingDto, role: string, userId: string) {
+    const { page = 1, limit = 10, order, orderBy } = query || {};
+
+    const where: any = this.createWhere(query);
+
+    if (role === 'user') {
+      where.userId = userId;
+    }
+
+    const findOptions: any = {
+      where,
+      limit,
+      offset: (page - 1) * limit,
+    };
+
+    if (orderBy && order) {
+      findOptions.order = [[orderBy, order]];
+    }
+
+    return this.bookingModel.findAll(findOptions);
   }
 
   async findOne(id: string) {

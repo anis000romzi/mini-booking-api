@@ -24,6 +24,7 @@ import { GetAvailableRoomsDto } from './dto/get-available-rooms.dto';
 import { RolesGuard } from 'src/commons/guards/roles.guard';
 import { Roles } from 'src/commons/decorators/roles.decorator';
 import { UpdateBookingStatusDto } from './dto/update-bookind-status.dto';
+import { QueryBookingDto } from './dto/query-booking.dto';
 
 @ApiBearerAuth()
 @Controller('booking')
@@ -52,7 +53,28 @@ export class BookingController {
     return this.bookingService.getAvailableRooms(query);
   }
 
-  // list all bookings
+  @Get('all-bookings')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async findAll(@Req() req: Request, @Query() query: QueryBookingDto) {
+    const { role, id } = req.user as any;
+
+    const data = await this.bookingService.findAll(query, role, id);
+    const count = await this.bookingService.count(query, role, id);
+    const { page = 1, limit = 10, orderBy, order } = query;
+
+    return {
+      meta: {
+        totalData: count,
+        totalPage: Math.ceil(count / limit),
+        page,
+        limit,
+        orderBy,
+        order,
+      },
+      data,
+    };
+  }
 
   @Put('update-status/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)

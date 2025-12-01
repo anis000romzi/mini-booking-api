@@ -7,12 +7,14 @@ import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { v4 as uuidv4 } from 'uuid';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User) private userModel: typeof User,
     private jwtService: JwtService,
+    private userService: UserService,
   ) {}
 
   async register(payload: RegisterDto) {
@@ -44,10 +46,13 @@ export class AuthService {
       email: user.email,
       role: user.role,
     });
-    return { access_token: token, user };
+
+    const loggedUser = await this.userModel.findOne({ where: { id: user.id } });
+    return { access_token: token, user: loggedUser };
   }
 
-  async profile() {
-    return;
+  async profile(userId: string) {
+    const loggedUser = await this.userModel.findOne({ where: { id: userId } });
+    return { user: loggedUser };
   }
 }

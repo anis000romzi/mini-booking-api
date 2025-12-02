@@ -87,6 +87,8 @@ export class BookingService {
       id: uuidv4(),
       userId,
       roomId,
+      roomName: room.roomName,
+      customerName: `${user.firstName} ${user.lastName}`,
       startAt,
       endAt,
       status: 'booked',

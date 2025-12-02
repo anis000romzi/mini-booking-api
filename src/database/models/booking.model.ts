@@ -37,6 +37,20 @@ export class Booking extends Model {
   declare roomId: string;
 
   @Column({
+    type: DataType.STRING,
+    allowNull: true,
+    field: 'room_name',
+  })
+  declare roomName: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+    field: 'customer_name',
+  })
+  declare customerName: string;
+
+  @Column({
     type: DataType.DATE,
     allowNull: false,
     field: 'start_at',
